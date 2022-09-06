@@ -35,10 +35,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST["remote_follow"])) {
         header('Content-Type: text/plain');
         print "Couldn't find user";
         exit;
-    } elseif (is_string($json_data)) {
+    } elseif (!is_array($json_data)) {
         http_response_code(500);
         header('Content-Type: text/plain');
         print $json_data;
+        exit;
+    } elseif (!array_key_exists("links", $json_data)) {
+        http_response_code(500);
+        header('Content-Type: text/plain');
+        print "Couldn't find user";
         exit;
     }
 
@@ -81,10 +86,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST["remote_follow"])) {
         header('Content-Type: text/plain');
         print "Couldn't find user";
         exit;
-    } elseif (is_string($json_data)) {
+    } elseif (!is_array($json_data)) {
         http_response_code(500);
         header('Content-Type: text/plain');
         print $json_data;
+        exit;
+    } elseif (!array_key_exists("links", $json_data)) {
+        http_response_code(500);
+        header('Content-Type: text/plain');
+        print "Couldn't find user";
         exit;
     }
 
