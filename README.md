@@ -72,9 +72,9 @@ Just put your username and instance in the `href` field at the beginning of thes
 
 ## Why do I need this?
 
-The most popular ActivityPub implementations (such as Mastodon, Pleroma, and Pixelfed) already allow for remote follow links. For example, Mastodon provides a remote follow interface at `/users/{username}/remote_follow` on each instance [(an example)](https://mathstodon.xyz/users/mwt/remote_follow). You can share this link to allow people to follow you.
+The most popular ActivityPub implementations (such as Mastodon and Pleroma) have remote follow implementations. Mastodon provides a remote follow interface at `/users/{username}/remote_follow` on each instance [(an example)](https://mathstodon.xyz/users/mwt/remote_follow). You can share this link to allow people to follow you. However, an actual follow link does not exist in most other implementations. For example, Pleroma uses a POST request to start the flow from the remote follow button. Therefore, it not possible to provide a direct link.
 
-Many other implementations of ActivityPub lack this feature. [The WordPress plugin](https://github.com/pfefferle/wordpress-activitypub) is an example. Without this feature, the only way for users to follow your content is for them to manually search for your account handle.
+Many other implementations of ActivityPub lack any builtin remote follow support. [The WordPress plugin](https://github.com/pfefferle/wordpress-activitypub) and Pixelfed are examples. Without this feature, the only way for users to follow your content is for them to manually search for your account handle.
 
 Moreover, it is nice when making/using templates to have a standard follow link that can be used for any ActivityPub implementation.
 
