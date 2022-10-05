@@ -138,8 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST["remote_follow"])) {
         $local_identifier = $profile_link;
     }
 
-    include 'includes/form.php';
+    include 'includes/fe-follow.php';
 } else {
-    header("Location: ${ini_array['default_redirect']}", true, 302);
-    exit();
+    include 'includes/fe-index.html';
 }

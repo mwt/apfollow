@@ -6,7 +6,9 @@ This is a remote follow tool for ActivityPub servers. With this tool, you can sh
 
 `https://apfollow.mwt.me/?user={username}&instance={domain.tld}`
 
-[Here is an example page](https://apfollow.mwt.me/?user=mwt&instance=mathstodon.xyz).
+[Here is a follow page generator](https://apfollow.mwt.me/)
+
+[Here is an example follow page](https://apfollow.mwt.me/?user=mwt&instance=mathstodon.xyz).
 
 
 ## Advanced usage
