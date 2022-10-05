@@ -81,6 +81,4 @@ Moreover, it is nice when making/using templates to have a standard follow link 
 
 ## License and credits
 
-This tool shamelessly uses Mastodon frontend elements. Because Mastodon is licensed under the AGPL-3.0, this software also must follow this license.
-
 This project is inspired by [this blog post by Hugh Rundle](https://www.hughrundle.net/how-to-implement-remote-following-for-your-activitypub-project/) which documents the procedure for remote follows.
