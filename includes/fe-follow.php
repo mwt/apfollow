@@ -15,7 +15,9 @@
         <h2 class="text-center my-3 fs-5">You are going to follow:</h2>
         <div class="card bg-dark">
             <a class="text-decoration-none" target="_blank" rel="noopener noreferrer" href="<?=$local_identifier?>">
-                <img class="card-img-top d-none d-sm-block" alt="" src="<?=(isset($local_image)) ? $local_image : $ini_array["placeholder_image"]?>">
+                <?php if (isset($local_image)) {?>
+                <img class="card-img-top d-none d-sm-block" alt="" src="<?=$local_image?>">
+                <?php } ?>
                 <div class="card-header d-flex">
                     <img alt="" class="rounded" src="<?=(isset($local_icon)) ? $local_icon : $ini_array["placeholder_image"]?>" width="48" height="48">
                     <div class="mx-3">
