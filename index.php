@@ -68,47 +68,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST["remote_follow"])) {
     }
 
 // if this is a get request with the appropriate parameters, we display the form
-} elseif (!empty($_GET["user"]) && !empty($_GET["instance"])) {
-    $local_user = $_GET["user"];
-    $local_instance = $_GET["instance"];
-    // Use curl to find the user's profile link
+} elseif (!empty($_GET["user"]) && !empty($_GET["instance"]) || !empty($_GET["href"])) {
+    // Open curl session
     $curl_session = curl_init();
-    curl_setopt($curl_session, CURLOPT_URL, "https://${local_instance}/.well-known/webfinger/?resource=acct:${local_user}@${local_instance}");
     curl_setopt($curl_session, CURLOPT_BINARYTRANSFER, true);
     curl_setopt($curl_session, CURLOPT_RETURNTRANSFER, true);
 
-    $json_data = json_decode(curl_exec($curl_session), true);
+    if (empty($_GET["href"])) {
+        $local_user = $_GET["user"];
+        $local_instance = $_GET["instance"];
 
-    // if json parse fails, assume that the account does not exist
-    // Mastodon returns invalid json while pleroma returns string
-    if (empty($json_data)) {
-        http_response_code(500);
-        header('Content-Type: text/plain');
-        print "Couldn't find user";
-        exit;
-    } elseif (!is_array($json_data)) {
-        http_response_code(500);
-        header('Content-Type: text/plain');
-        print $json_data;
-        exit;
-    } elseif (!array_key_exists("links", $json_data)) {
-        http_response_code(500);
-        header('Content-Type: text/plain');
-        print "Couldn't find user";
-        exit;
-    }
+        // Use curl to find the user's profile link
+        curl_setopt($curl_session, CURLOPT_URL, "https://${local_instance}/.well-known/webfinger/?resource=acct:${local_user}@${local_instance}");
+        $json_data = json_decode(curl_exec($curl_session), true);
 
-    // find the user's profile link in the array
-    foreach ($json_data["links"] as $link) {
-        if (array_key_exists("type", $link) && $link["type"] == "application/activity+json") {
-            $profile_link = $link["href"];
-            break;
+        // if json parse fails, assume that the account does not exist
+        // Mastodon returns invalid json while pleroma returns string
+        if (empty($json_data)) {
+            http_response_code(500);
+            header('Content-Type: text/plain');
+            print "Couldn't find user";
+            exit;
+        } elseif (!is_array($json_data)) {
+            http_response_code(500);
+            header('Content-Type: text/plain');
+            print $json_data;
+            exit;
+        } elseif (!array_key_exists("links", $json_data)) {
+            http_response_code(500);
+            header('Content-Type: text/plain');
+            print "Couldn't find user";
+            exit;
         }
+
+        // find the user's profile link in the array
+        foreach ($json_data["links"] as $link) {
+            if (array_key_exists("type", $link) && $link["type"] == "application/activity+json") {
+                $profile_link = $link["href"];
+                break;
+            }
+        }
+    } else {
+        // href was defined
+        $profile_link = $_GET["href"];
+        $local_instance = parse_url($profile_link, PHP_URL_HOST);
     }
 
     // make a request to the profile link
     curl_setopt($curl_session, CURLOPT_URL, $profile_link);
     curl_setopt($curl_session, CURLOPT_HTTPHEADER, ["Accept: application/activity+json"]);
+    curl_setopt($curl_session, CURLOPT_FOLLOWLOCATION, true);
     $json_data = json_decode(curl_exec($curl_session), true);
     curl_close($curl_session);
 
@@ -131,6 +140,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST["remote_follow"])) {
         }
         if (array_key_exists("image", $json_data)) {
             $local_image = $json_data["image"]["url"];
+        }
+        // if the user specified the id manually, we should set the username
+        if (empty($local_user)) {
+            if (array_key_exists("preferredUsername", $json_data)) {
+                $local_user = $json_data["preferredUsername"];
+            } else {
+                $local_user = "unknown_user";
+            }
         }
     } else {
         // do our best in the event that the request is unauthorized
