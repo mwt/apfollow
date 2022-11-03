@@ -4,7 +4,7 @@
 <head>
     <meta charset='utf-8'>
     <meta content='width=device-width, initial-scale=1' name='viewport'>
-    <title>Follow <?=$local_user ?></title>
+    <title>Follow <?=(isset($local_fullname)) ? $local_fullname : $local_user ?></title>
     <meta content='#212529' name='theme-color'>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
     <style>.follow-container{max-width: 425px}</style>
