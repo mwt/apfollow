@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST["remote_follow"])) {
 
     // Use curl to find the remote subscription template file
     $curl_session = curl_init();
-    curl_setopt($curl_session, CURLOPT_URL, "https://${remote_instance}/.well-known/webfinger/?resource=acct:${remote_user}@${remote_instance}");
+    curl_setopt($curl_session, CURLOPT_URL, "https://${remote_instance}/.well-known/webfinger?resource=acct:${remote_user}@${remote_instance}");
     curl_setopt($curl_session, CURLOPT_BINARYTRANSFER, true);
     curl_setopt($curl_session, CURLOPT_RETURNTRANSFER, true);
 
