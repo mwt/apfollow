@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST["remote_follow"])) {
         $local_instance = $_GET["instance"];
 
         // Use curl to find the user's profile link
-        curl_setopt($curl_session, CURLOPT_URL, "https://${local_instance}/.well-known/webfinger/?resource=acct:${local_user}@${local_instance}");
+        curl_setopt($curl_session, CURLOPT_URL, "https://${local_instance}/.well-known/webfinger?resource=acct:${local_user}@${local_instance}");
         $json_data = json_decode(curl_exec($curl_session), true);
 
         // if json parse fails, assume that the account does not exist
