@@ -24,6 +24,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST["remote_follow"])) {
     curl_setopt($curl_session, CURLOPT_URL, "https://${remote_instance}/.well-known/webfinger?resource=acct:${remote_user}@${remote_instance}");
     curl_setopt($curl_session, CURLOPT_BINARYTRANSFER, true);
     curl_setopt($curl_session, CURLOPT_RETURNTRANSFER, true);
+    
+    // Allow redirects for webfinger lookup
+    curl_setopt($curl_session, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($curl_session, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
+
+    // Allow redirects for webfinger lookup
+    curl_setopt($curl_session, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($curl_session, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
 
     $json_data = json_decode(curl_exec($curl_session), true);
     curl_close($curl_session);
@@ -67,12 +75,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST["remote_follow"])) {
         exit;
     }
 
-// if this is a get request with the appropriate parameters, we display the form
+    // if this is a get request with the appropriate parameters, we display the form
 } elseif (!empty($_GET["user"]) && !empty($_GET["instance"]) || !empty($_GET["href"])) {
     // Open curl session
     $curl_session = curl_init();
     curl_setopt($curl_session, CURLOPT_BINARYTRANSFER, true);
     curl_setopt($curl_session, CURLOPT_RETURNTRANSFER, true);
+
+    // Allow redirects for webfinger lookup
+    curl_setopt($curl_session, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($curl_session, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
 
     if (empty($_GET["href"])) {
         $local_user = $_GET["user"];
@@ -117,7 +129,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST["remote_follow"])) {
     // make a request to the profile link
     curl_setopt($curl_session, CURLOPT_URL, $profile_link);
     curl_setopt($curl_session, CURLOPT_HTTPHEADER, ["Accept: application/activity+json"]);
-    curl_setopt($curl_session, CURLOPT_FOLLOWLOCATION, true);
     $json_data = json_decode(curl_exec($curl_session), true);
     curl_close($curl_session);
 
