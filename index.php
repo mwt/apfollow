@@ -21,8 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST["remote_follow"])) {
 
     // Use curl to find the remote subscription template file
     $curl_session = curl_init();
-    curl_setopt($curl_session, CURLOPT_URL, "https://${remote_instance}/.well-known/webfinger?resource=acct:${remote_user}@${remote_instance}");
-    curl_setopt($curl_session, CURLOPT_BINARYTRANSFER, true);
+    curl_setopt($curl_session, CURLOPT_URL, "https://{$remote_instance}/.well-known/webfinger?resource=acct:{$remote_user}@{$remote_instance}");
     curl_setopt($curl_session, CURLOPT_RETURNTRANSFER, true);
 
     // Allow redirects for webfinger lookup
@@ -66,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST["remote_follow"])) {
     // Perform the redirect
     if (isset($subscribe_template)) {
         $follow_url = str_replace("{uri}", urlencode($_POST["remote_follow"]["local_id"]), $subscribe_template);
-        header("Location: ${follow_url}", true, 302);
+        header("Location: {$follow_url}", true, 302);
         exit();
     } else {
         http_response_code(500);
@@ -79,7 +78,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST["remote_follow"])) {
 } elseif (!empty($_GET["user"]) && !empty($_GET["instance"]) || !empty($_GET["href"])) {
     // Open curl session
     $curl_session = curl_init();
-    curl_setopt($curl_session, CURLOPT_BINARYTRANSFER, true);
     curl_setopt($curl_session, CURLOPT_RETURNTRANSFER, true);
 
     // Allow redirects for webfinger lookup
@@ -91,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST["remote_follow"])) {
         $local_instance = $_GET["instance"];
 
         // Use curl to find the user's profile link
-        curl_setopt($curl_session, CURLOPT_URL, "https://${local_instance}/.well-known/webfinger?resource=acct:${local_user}@${local_instance}");
+        curl_setopt($curl_session, CURLOPT_URL, "https://{$local_instance}/.well-known/webfinger?resource=acct:{$local_user}@{$local_instance}");
         $json_data = json_decode(curl_exec($curl_session), true);
 
         // if json parse fails, assume that the account does not exist
