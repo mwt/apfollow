@@ -1,6 +1,6 @@
 <?php $ini_array = parse_ini_file('apfollow.ini');
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST["remote_follow"])) {
-    // get the comment from the POST
+    // get the content from the POST
     $acct_array = explode("@", $_POST["remote_follow"]["acct"]);
     // the user may input @user@domain.tld or user@domain.tld
     switch (count($acct_array)) {
@@ -19,63 +19,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST["remote_follow"])) {
             exit;
     }
 
-    // Use curl to find the remote subscription template file
-    $curl_session = curl_init();
-    curl_setopt($curl_session, CURLOPT_URL, "https://{$remote_instance}/.well-known/webfinger?resource=acct:{$remote_user}@{$remote_instance}");
-    curl_setopt($curl_session, CURLOPT_RETURNTRANSFER, true);
+    // import the ActivityPub functions
+    include 'includes/functions.php';
 
-    // Allow redirects for webfinger lookup
-    curl_setopt($curl_session, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($curl_session, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
+    // get the remote user's activitypub resource
+    $activitypub_resource = get_activitypub_resource($remote_user, $remote_instance);
 
-    // Allow redirects for webfinger lookup
-    curl_setopt($curl_session, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($curl_session, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
-
-    $json_data = json_decode(curl_exec($curl_session), true);
-    curl_close($curl_session);
-
-    // if json parse fails, assume that the account does not exist
-    // Mastodon returns invalid json while pleroma returns string
-    if (empty($json_data)) {
+    // If the function did not succeed, we return an error that the user could not be found
+    if (!$activitypub_resource["success"]) {
         http_response_code(500);
         header('Content-Type: text/plain');
-        print "Couldn't find user";
-        exit;
-    } elseif (!is_array($json_data)) {
-        http_response_code(500);
-        header('Content-Type: text/plain');
-        print $json_data;
-        exit;
-    } elseif (!array_key_exists("links", $json_data)) {
-        http_response_code(500);
-        header('Content-Type: text/plain');
-        print "Couldn't find user";
+        print $activitypub_resource["output"] ? $activitypub_resource["output"] : "Couldn't find user";
         exit;
     }
 
-    // We need to parse to find the link with a rel equal to the schema for subscribe
-    foreach ($json_data["links"] as $link) {
-        if (array_key_exists("rel", $link) && $link["rel"] == "http://ostatus.org/schema/1.0/subscribe") {
-            $subscribe_template = $link["template"];
-            break;
-        }
-    }
+    // get the remote follow link
+    $follow_url = get_remote_follow_link($activitypub_resource["output"], $_POST["remote_follow"]["local_id"]);
 
-    // Perform the redirect
-    if (isset($subscribe_template)) {
-        $follow_url = str_replace("{uri}", urlencode($_POST["remote_follow"]["local_id"]), $subscribe_template);
-        header("Location: {$follow_url}", true, 302);
-        exit();
-    } else {
+    // If the function did not succeed, we return an error that subscribe schema 1.0 is not supported
+    if (!$follow_url) {
         http_response_code(500);
         header('Content-Type: text/plain');
         print "Instance does not support subscribe schema version 1.0.";
         exit;
     }
 
-    // if this is a get request with the appropriate parameters, we display the form
+    // Redirect to the follow link
+    header("Location: {$follow_url}", true, 302);
+    exit();
 } elseif (!empty($_GET["user"]) && !empty($_GET["instance"]) || !empty($_GET["href"])) {
+    // if this is a get request with the appropriate parameters, we display the form
+
     // Open curl session
     $curl_session = curl_init();
     curl_setopt($curl_session, CURLOPT_RETURNTRANSFER, true);
