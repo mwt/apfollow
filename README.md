@@ -84,3 +84,7 @@ Moreover, it is nice when making/using templates to have a standard follow link 
 ## License and credits
 
 This project is inspired by [this blog post by Hugh Rundle](https://www.hughrundle.net/how-to-implement-remote-following-for-your-activitypub-project/) which documents the procedure for remote follows.
+
+## Requirements
+
+This project depends on `php-curl` and `php-xml` (SimpleXML).
