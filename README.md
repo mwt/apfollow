@@ -8,7 +8,7 @@ This is a remote follow tool for ActivityPub servers. With this tool, you can sh
 
 [Here is a follow page generator](https://apfollow.mwt.me/)
 
-[Here is an example follow page](https://apfollow.mwt.me/?user=mwt&instance=mathstodon.xyz).
+[Here is an example follow page](https://apfollow.mwt.me/?user=mwt&instance=econtwitter.net).
 
 
 ## Advanced usage
